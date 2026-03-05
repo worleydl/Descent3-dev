@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)  # For using CMAKE_<LANG>_BYTE_ORDER
+include(FetchContent)
 
 # set default cmake build type to Debug (None Debug Release RelWithDebInfo MinSizeRel)
 if(NOT CMAKE_BUILD_TYPE AND NOT DEFINED ENV{CMAKE_BUILD_TYPE})
@@ -56,6 +57,13 @@ if(UWP_BUILD)
   # UWP can only load /MD DLL's that were linked against winrt runtime
   # So build everything MT, and make the main exe a DLL for external launch
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+  # Fetch shared UWP deps (SDL3/libuwp/Mesa OpenGL Wrapper)
+  FetchContent_Declare(UwpLibs
+    GIT_REPOSITORY https://github.com/worleydl/uwp-dep.git
+    GIT_TAG 3efbfdadce653d59081e1a7c0ae44d5aff18bed7
+  )
+  FetchContent_MakeAvailable(UwpLibs)
 endif()
 
 set(CODESIGN_IDENTITY "" CACHE STRING "Sets the macOS code signing identity. If set to something besides the empty string, then the dynamic libraries put into the hog files will be signed using this identity.")
@@ -185,7 +193,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
   add_compile_options("-Wno-multichar;-Wall")
 endif()
 
+# UWP needs special build already provided by the uwpDepot
+if (NOT UWP_BUILD)
 find_package(SDL3 3.2.6 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
+endif()
 find_package(glm REQUIRED)
 find_package(httplib QUIET)
 if (TARGET httplib::httplib)
