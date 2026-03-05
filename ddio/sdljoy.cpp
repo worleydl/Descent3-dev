@@ -94,6 +94,13 @@ static void joy_CloseStick(tJoystick joy);
 static bool joy_InitStick(tJoystick joy, char *server_adr);
 
 //	---------------------------------------------------------------------------
+//	global functions: currently just hooks up the gamepad connection event filter
+bool sdlGamepadConnectionFilter(const SDL_Event *event) {
+  joy_Init();
+  return true;
+}
+
+//	---------------------------------------------------------------------------
 //	functions
 
 //	joystick system initialization
@@ -102,6 +109,11 @@ bool joy_Init() {
   joy_Close();
   if (!SDL_InitSubSystem(SDL_INIT_JOYSTICK)) {
     LOG_ERROR << "Could not initialize Joystick";
+    return false;
+  }
+
+  if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD)) {
+    LOG_ERROR << "Could not initialize Gamepad";
     return false;
   }
 
