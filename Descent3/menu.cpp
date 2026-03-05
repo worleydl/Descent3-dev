@@ -678,7 +678,7 @@
 #include "multi_dll_mgr.h"
 #include "newui_core.h"
 
-#ifdef _WIN32
+#if _WIN32 && !_UWP
 #define USE_DIRECTPLAY
 #endif
 

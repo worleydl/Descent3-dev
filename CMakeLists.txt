@@ -49,6 +49,13 @@ option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored compiler warnings/error
 option(FORCE_PORTABLE_INSTALL "Install all files into local directory defined by CMAKE_INSTALL_PREFIX" ON)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   option(BUILD_EDITOR "Build internal editor" OFF)
+  option(UWP_BUILD "Build UWP compatible static lib for external launch on supported platforms." ON) # todo: default off
+endif()
+
+if(UWP_BUILD)
+  # UWP can only load /MD DLL's that were linked against winrt runtime
+  # So build everything MT, and make the main exe a DLL for external launch
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 set(CODESIGN_IDENTITY "" CACHE STRING "Sets the macOS code signing identity. If set to something besides the empty string, then the dynamic libraries put into the hog files will be signed using this identity.")
@@ -212,6 +219,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
           #[[NOGDI]] # We need GDI for now, enable when GDI is actually not needed (or when all windows.h mentions are gone)
   )
 
+  if(UWP_BUILD)
+    add_compile_definitions(_UWP)
+  endif()
+
   list(APPEND CMAKE_LIBRARY_PATH "lib/win" "lib/win/DirectX/${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
   add_compile_options("$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:CXX>>:/EHsc;/RTC1;/W3;/nologo;/c;/Zi;/TP;/errorReport:prompt>")
   add_compile_options("$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/GL;/FD;/EHsc;/W3;/nologo;/c;/Zi;/TP;/errorReport:prompt>")
@@ -224,11 +235,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(CMAKE_FIND_LIBRARY_PREFIXES "")
   set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
 
-  add_compile_definitions(DIRECTINPUT_VERSION=0x0500)
-  find_library(DSOUND_LIBRARY NAMES dsound REQUIRED)
-  find_library(DINPUT_LIBRARY NAMES dinput REQUIRED)
-  find_library(DXGUID_LIBRARY NAMES dxguid REQUIRED)
-  find_library(DDRAW_LIBRARY NAMES ddraw REQUIRED)
+  if(NOT UWP_BUILD)
+    add_compile_definitions(DIRECTINPUT_VERSION=0x0500)
+    find_library(DSOUND_LIBRARY NAMES dsound REQUIRED)
+    find_library(DINPUT_LIBRARY NAMES dinput REQUIRED)
+    find_library(DXGUID_LIBRARY NAMES dxguid REQUIRED)
+    find_library(DDRAW_LIBRARY NAMES ddraw REQUIRED)
+  endif()
 
   if(MSVC AND CMAKE_CXX_SIMULATE_ID STREQUAL "")
     add_compile_options("/we4150")  # deletion of pointer to incomplete type 'type'; no destructor called

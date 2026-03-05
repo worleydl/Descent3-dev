@@ -24,6 +24,13 @@
 			}
 		},
 		{
+			"name": "win-uwp",
+			"inherits": "win",
+			"cacheVariables": {
+				"VCPKG_TARGET_TRIPLET": "x64-windows-static"
+			}
+		},
+		{
 			"name": "mac",
 			"inherits": "defaults",
 			"generator": "Ninja Multi-Config",
@@ -67,6 +74,10 @@
 		{
 			"name": "win",
 			"configurePreset": "win"
+		},
+		{
+			"name": "win-uwp",
+			"configurePreset": "win-uwp"
 		},
 		{
 			"name": "mac",

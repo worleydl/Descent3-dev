@@ -329,7 +329,7 @@ typedef int socklen_t;
 #include "byteswap.h"
 #include "ctlconfig.h"
 
-#ifndef WIN32
+#if !WIN32 || _UWP
 bool Use_DirectPlay = false;
 #endif
 
@@ -533,7 +533,9 @@ void CloseNetworking() {
 #ifdef WIN32
   WSACancelBlockingCall();
 
+  #ifndef _UWP
   dp_ShutdownDirectPlay();
+  #endif
 #endif
 
   if (TCP_socket != INVALID_SOCKET) {
@@ -598,7 +600,7 @@ void nw_InitNetworking(int iReadBufSizeOverride) {
       Net_fixed_ip = INADDR_NONE;
     }
   }
-#ifdef WIN32
+#if WIN32 && !_UWP
   if (!dp_DidLobbyLaunchGame()) {
     static char exewithpath[_MAX_PATH * 2];
     static char exefile[_MAX_PATH * 2];
@@ -929,7 +931,7 @@ int nw_Receive(void *data, network_address *from_addr) {
   // call the routine to read data out of the socket (which stuffs it into the packet buffers)
 
   if (Use_DirectPlay) {
-#ifdef WIN32
+#if WIN32 && !_UWP
     dp_DirectPlayDispatch();
 #endif
   } else {
@@ -958,7 +960,7 @@ int nw_ReceiveReliable(SOCKET socketid, uint8_t *buffer, int max_len) {
 
   int i;
   if (Use_DirectPlay) {
-#ifdef WIN32
+#if WIN32 && !_UWP
     dp_DirectPlayDispatch();
 
     // try and get a free buffer and return its size
@@ -1014,7 +1016,7 @@ int nw_CheckListenSocket(network_address *from_addr) {
 #endif
 
   if (Use_DirectPlay) {
-#ifdef WIN32
+#if WIN32 && !_UWP
     // look for a pending connection
     for (int i = 0; i < MAX_PENDING_NEW_CONNECTIONS; i++) {
       if (Pending_dp_conn[i] != DPID_UNKNOWN) {
@@ -1084,7 +1086,7 @@ int nw_SendReliable(uint32_t socketid, uint8_t *data, int length, bool urgent) {
   }
 
   if (Use_DirectPlay) {
-#ifdef WIN32
+#if WIN32 && !_UWP
     network_address who_to;
     who_to.connection_type = NP_DIRECTPLAY;
     memcpy(&who_to.address, &socketid, sizeof(DPID));
@@ -1658,7 +1660,7 @@ void nw_ConnectToServer(SOCKET *socket, network_address *server_addr) {
 
 void nw_CloseSocket(SOCKET *sockp) {
   reliable_header diss_conn_header;
-#ifdef WIN32
+#if WIN32 && !_UWP
   if (DP_active) {
     dp_DirectPlayDestroyPlayer(*sockp);
     return;
@@ -2314,7 +2316,7 @@ int nw_SendWithID(uint8_t id, uint8_t *data, int len, network_address *who_to) {
   // seconds.\n",id,data[0],timer_GetTime());
 
 // mprintf(0,"Sending packet for id %d.\n",id);
-#ifdef WIN32
+#if WIN32 && !_UWP
   if (Use_DirectPlay)
     return dp_DirectPlaySend(who_to, (uint8_t *)data, len, false);
 #endif

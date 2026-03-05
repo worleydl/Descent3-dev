@@ -2,7 +2,8 @@ set(HEADERS)
 set(CPPS
   networking.cpp
   $<$<PLATFORM_ID:Windows>:
-    directplay.cpp
+  # todo: win uwp config, legacy dx unavailable
+  #directplay.cpp
   >
 )
 
