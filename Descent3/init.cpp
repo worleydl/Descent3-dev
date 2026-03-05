@@ -1450,8 +1450,14 @@ void InitIOSystems(bool editor) {
   }
 
   // Platform dependent paths
+#ifndef _UWP
   std::filesystem::path platform_dir = std::filesystem::canonical(D3_DATADIR);
   cf_AddBaseDirectory(platform_dir);
+#else
+  // more canonical mysteries above, hacking to external for now.
+  std::filesystem::path platform_dir = "E:\\descent3";
+  cf_AddBaseDirectory(platform_dir);
+#endif
   // TODO: add Steam/registry locations
 
   // Add path of executable

@@ -196,11 +196,19 @@ std::filesystem::path ddio_GetTmpFileName(const std::filesystem::path &basedir, 
 
 std::filesystem::path ddio_GetPrefPath(const char *org, const char *app) {
   char *pref_path = SDL_GetPrefPath(org, app);
+#ifdef _UWP
+  std::filesystem::create_directories(pref_path);
+#endif
   if (!pref_path) {
     LOG_ERROR << "Failed to get writable preference path!";
     return {};
   }
+#ifndef _UWP
   std::filesystem::path result = std::filesystem::canonical(pref_path);
+#else
+  // todo: weird canonical behavior, possibly due to MT dll wrapper could call back into libuwp...
+  std::filesystem::path result = pref_path;
+#endif
   SDL_free(pref_path);
   return result;
 }
@@ -211,6 +219,11 @@ std::filesystem::path ddio_GetBasePath() {
     LOG_ERROR << "Failed to get parent path of executable!";
     return {};
   }
+#ifndef _UWP
   std::filesystem::path result = std::filesystem::canonical(exe_path);
+#else
+  // todo: canonical bug
+  std::filesystem::path result = exe_path;
+#endif
   return result;
 }
