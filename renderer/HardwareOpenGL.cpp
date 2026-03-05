@@ -58,6 +58,11 @@
 #include "win/arb_extensions.h"
 #endif
 
+#ifdef _UWP
+extern "C" __declspec(dllimport) void uwp_GetScreenSize(int*, int*);
+extern "C" __declspec(dllimport) void uwp_SetScreenSize(int, int);
+#endif
+
 // General renderer states
 extern int gpu_Overlay_map;
 int Bump_map = 0;
@@ -438,6 +443,11 @@ int opengl_Setup(oeApplication *app, const int *width, const int *height) {
       LOG_ERROR.printf("OpenGL: SDL window creation failed: %s", SDL_GetError());
       return 0;
     }
+
+#ifdef _UWP
+    // mesa + libuwp bridge needs a size hint to resize the swapchain buffers
+    uwp_SetScreenSize(winw, winh);
+#endif
 
     bool grabMouse = FindArgChar("-nomousegrab", 'm') == 0;
     SDL_SetWindowRelativeMouseMode(GSDLWindow, grabMouse);
@@ -1469,7 +1479,11 @@ void rend_Flip() {
   // if we're rendering to an FBO, scale to the window framebuffer!
   if (GOpenGLFBO != 0) {
     int w, h;
+#ifndef _UWP
     SDL_GetWindowSizeInPixels(GSDLWindow, &w, &h);
+#else
+    uwp_GetScreenSize(&w, &h);
+#endif
 
     int scaledHeight, scaledWidth;
     if (w < h) {

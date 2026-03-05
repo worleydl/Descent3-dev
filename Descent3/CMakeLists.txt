@@ -276,6 +276,9 @@ set(CPPS
 
 if(WIN32)
   set(PLATFORM_LIBS wsock32.lib winmm.lib)
+  if (UWP_BUILD)
+    list(APPEND PLATFORM_LIBS uwp::libuwp)
+  endif()
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO /NODEFAULTLIB:LIBC")
 
   set(MANIFEST ${CMAKE_CURRENT_BINARY_DIR}/Descent3.exe.manifest)

@@ -61,7 +61,7 @@ if(UWP_BUILD)
   # Fetch shared UWP deps (SDL3/libuwp/Mesa OpenGL Wrapper)
   FetchContent_Declare(UwpLibs
     GIT_REPOSITORY https://github.com/worleydl/uwp-dep.git
-    GIT_TAG 3efbfdadce653d59081e1a7c0ae44d5aff18bed7
+    GIT_TAG 0f183fd4b258f4f5a38f96aa4414de581b75a8ca
   )
   FetchContent_MakeAvailable(UwpLibs)
 endif()
