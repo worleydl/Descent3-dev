@@ -316,7 +316,11 @@ endif()
 
 file(GLOB_RECURSE INCS "../lib/*.h")
 
+if(NOT UWP_BUILD)
 add_executable(Descent3 WIN32 MACOSX_BUNDLE ${D3Icon} ${HEADERS} ${CPPS} ${INCS} ${MANIFEST} ${RC_FILE})
+else()
+add_library(Descent3 SHARED ${HEADERS} ${CPPS} ${INCS})
+endif()
 target_link_libraries(Descent3 PRIVATE
   SDL3::SDL3
   2dlib
