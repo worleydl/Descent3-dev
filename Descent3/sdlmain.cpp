@@ -35,6 +35,14 @@
 
 #include <SDL3/SDL.h>
 
+#ifdef _UWP
+#define SDL_MAIN_EXPORTED
+// todo: why do both of these need to be defined to get the export to work??
+#define SDL_DECLSPEC __declspec(dllexport)
+#define SDLMAIN_DECLSPEC __declspec(dllexport)
+#include <SDL3/SDL_main.h>
+#endif
+
 #include "appdatabase.h"
 #include "application.h"
 #include "args.h"
@@ -212,7 +220,7 @@ bool SDLCALL d3SDLEventFilter(void *userdata, SDL_Event *event) {
 //		creates all the OS objects and then runs Descent 3.
 //		this is all this function should do.
 //	---------------------------------------------------------------------------
-#ifdef WIN32
+#if WIN32 && !_UWP
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR szCmdLine, int nCmdShow) {
   strupr(szCmdLine);
   GatherArgs(szCmdLine);
