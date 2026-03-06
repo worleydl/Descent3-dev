@@ -84,6 +84,10 @@ static struct {
   tJoyInfo caps;
 } Joysticks[MAX_JOYSTICKS];
 
+// Virtual mouse state
+static int vm_x = 0;
+static int vm_y = 0;
+
 static int joyGetNumDevs(void);
 
 //		closes connection with controller.
@@ -94,10 +98,36 @@ static void joy_CloseStick(tJoystick joy);
 static bool joy_InitStick(tJoystick joy, char *server_adr);
 
 //	---------------------------------------------------------------------------
-//	global functions: currently just hooks up the gamepad connection event filter
+//	global function impls
+
+void ddio_VirtualMouseGetState(int* mx, int* my) {
+  *mx = vm_x;
+  *my = vm_y;
+}
+
+#define VIRTUAL_MOUSE_MAX_SPEED 18
+#define VIRTUAL_MOUSE_MIN_SPEED 2
+bool sdlGamepadAxisMotionFilter(const SDL_Event *event) {
+  // currently just used for virtual mouse mgnt, rest of input is polled
+  const SDL_GamepadAxis axis = static_cast<SDL_GamepadAxis>(event->gaxis.axis);
+  auto delta = event->gaxis.value;
+
+  float speed = (abs(delta) / 32767.0) * VIRTUAL_MOUSE_MAX_SPEED;
+  speed = std::max((float)VIRTUAL_MOUSE_MIN_SPEED, speed);
+
+  if (axis == SDL_GAMEPAD_AXIS_LEFTX) {
+    vm_x += delta == 0 ? 0 : delta > 0 ? speed : -speed;
+  } else if (axis == SDL_GAMEPAD_AXIS_LEFTY) {
+    vm_y += delta == 0 ? 0 : delta > 0 ? speed : -speed;
+  }
+
+  return false;
+
+}
 bool sdlGamepadConnectionFilter(const SDL_Event *event) {
   joy_Init();
-  return true;
+
+  return false;
 }
 
 //	---------------------------------------------------------------------------
