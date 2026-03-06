@@ -66,6 +66,7 @@
  * $NoKeywords: $
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <SDL3/SDL.h>
@@ -74,6 +75,7 @@
 #include "args.h"
 #include "joystick.h"
 #include "log.h"
+#include "ddio.h"
 
 //	---------------------------------------------------------------------------
 //	globals
@@ -85,6 +87,8 @@ static struct {
 } Joysticks[MAX_JOYSTICKS];
 
 // Virtual mouse state
+static int vm_dx = 0;
+static int vm_dy = 0;
 static int vm_x = 0;
 static int vm_y = 0;
 
@@ -101,24 +105,35 @@ static bool joy_InitStick(tJoystick joy, char *server_adr);
 //	global function impls
 
 void ddio_VirtualMouseGetState(int* mx, int* my) {
+  // todo: maybe apply delta somewhere else
+  vm_x += vm_dx;
+  vm_y += vm_dy;
+
+  // why are these values much higher than actual intended res?
+  int left, top, right, bottom;
+  ddio_MouseGetLimits(&left, &top, &right, &bottom, nullptr, nullptr);
+  vm_x = std::clamp(vm_x, 0, right);
+  vm_y = std::clamp(vm_y, 0, bottom);
+
   *mx = vm_x;
   *my = vm_y;
 }
 
-#define VIRTUAL_MOUSE_MAX_SPEED 18
-#define VIRTUAL_MOUSE_MIN_SPEED 2
+#define VIRTUAL_MOUSE_MAX_SPEED 250
+#define VIRTUAL_MOUSE_MIN_SPEED 8
+#define VIRTUAL_DEADZONE 2000
 bool sdlGamepadAxisMotionFilter(const SDL_Event *event) {
   // currently just used for virtual mouse mgnt, rest of input is polled
   const SDL_GamepadAxis axis = static_cast<SDL_GamepadAxis>(event->gaxis.axis);
-  auto delta = event->gaxis.value;
+  auto delta = abs(event->gaxis.value) > VIRTUAL_DEADZONE ? event->gaxis.value : 0;
 
   float speed = (abs(delta) / 32767.0) * VIRTUAL_MOUSE_MAX_SPEED;
   speed = std::max((float)VIRTUAL_MOUSE_MIN_SPEED, speed);
 
   if (axis == SDL_GAMEPAD_AXIS_LEFTX) {
-    vm_x += delta == 0 ? 0 : delta > 0 ? speed : -speed;
+    vm_dx = delta == 0 ? 0 : delta > 0 ? speed : -speed;
   } else if (axis == SDL_GAMEPAD_AXIS_LEFTY) {
-    vm_y += delta == 0 ? 0 : delta > 0 ? speed : -speed;
+    vm_dy = delta == 0 ? 0 : delta > 0 ? speed : -speed;
   }
 
   return false;
@@ -183,7 +198,8 @@ static bool joy_InitStick(tJoystick joy, char *server_adr) {
   if (server_adr) {
     return false;
   }
-  SDL_Joystick *stick = SDL_OpenJoystick(joy);
+  SDL_Gamepad *gamepad = SDL_OpenGamepad(joy);
+  SDL_Joystick *stick = SDL_GetGamepadJoystick(gamepad);
   Joysticks[joy].handle = stick;
   if (stick) {
     tJoyInfo caps;
