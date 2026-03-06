@@ -185,6 +185,7 @@ public:
 };
 
 bool sdlGamepadConnectionFilter(const SDL_Event *event);
+bool sdlGamepadAxisMotionFilter(const SDL_Event *event);
 bool sdlKeyFilter(const SDL_Event *event);
 bool sdlMouseButtonUpFilter(const SDL_Event *event);
 bool sdlMouseButtonDownFilter(const SDL_Event *event);
@@ -196,6 +197,8 @@ bool SDLCALL d3SDLEventFilter(void *userdata, SDL_Event *event) {
   case SDL_EVENT_GAMEPAD_ADDED:
   case SDL_EVENT_GAMEPAD_REMOVED:
     return sdlGamepadConnectionFilter(event);
+  case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+    return sdlGamepadAxisMotionFilter(event);
   case SDL_EVENT_KEY_UP:
   case SDL_EVENT_KEY_DOWN:
     return (sdlKeyFilter(event));

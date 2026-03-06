@@ -268,12 +268,20 @@ bool ui_MousePoll(bool buttons) {
   int msebtn;
   bool state;
   if (!buttons) {
+#ifndef _UWP
     //	get all input, mouse maintains persistent button info. key doesn't.
     btn_mask = ddio_MouseGetState(&mx, &my, NULL, NULL);
     UI_input.last_mx = UI_input.mx;
     UI_input.last_my = UI_input.my;
     UI_input.mx = mx / kDefaultMouseScale;
     UI_input.my = my / kDefaultMouseScale;
+#else
+    ddio_VirtualMouseGetState(&mx, &my);
+    UI_input.last_mx = UI_input.mx;
+    UI_input.last_my = UI_input.my;
+    UI_input.mx = mx / kDefaultMouseScale;
+    UI_input.my = my / kDefaultMouseScale;
+#endif
   } else if (UI_cursor_show) {
     // if bX_count is 0, then repeat processing can occur, otherwise only real mouse events are processed.
     if (ddio_MouseGetEvent(&msebtn, &state)) {

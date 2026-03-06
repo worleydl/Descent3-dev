@@ -239,6 +239,11 @@ void ddio_InternalResetKey(uint8_t key);
 #define timer_GetMSTime D3::ChronoTimer::GetTimeMS
 
 // ----------------------------------------------------------------------------
+//	Virtual Mouse Interface driven by gamepad inputs
+// ----------------------------------------------------------------------------
+void ddio_VirtualMouseGetState(int *x, int *y);
+
+// ----------------------------------------------------------------------------
 //	Device Dependent Mouse Interface
 // ----------------------------------------------------------------------------
 
