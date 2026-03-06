@@ -1,11 +1,13 @@
 set(HEADERS)
 set(CPPS
   networking.cpp
-  $<$<PLATFORM_ID:Windows>:
-  # todo: win uwp config, legacy dx unavailable
-  #directplay.cpp
-  >
 )
+
+if(WIN32 AND NOT UWP_BUILD)
+  list(APPEND CPPS
+    directplay.cpp
+  )
+endif()
 
 if(WIN32)
   set(PLATFORM_LIBS ${DXGUID_LIBRARY})
