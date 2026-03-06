@@ -50,7 +50,7 @@ option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored compiler warnings/error
 option(FORCE_PORTABLE_INSTALL "Install all files into local directory defined by CMAKE_INSTALL_PREFIX" ON)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   option(BUILD_EDITOR "Build internal editor" OFF)
-  option(UWP_BUILD "Build UWP compatible static lib for external launch on supported platforms." ON) # todo: default off
+  option(UWP_BUILD "Build UWP compatible DLL for external launch." ON) # todo: default off
 endif()
 
 if(UWP_BUILD)
