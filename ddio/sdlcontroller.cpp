@@ -307,7 +307,6 @@ ct_config_data sdlgameController::get_controller_value(ct_type type_req) {
       float pos;
       float limit;
       unsigned ctl = CONTROLLER_CTL_INFO(i, NULL_CONTROLLER);
-
       if (m_ControlList[i].flags & CTF_V_AXIS) {
         limit = (m_ControlList[i].sens[CT_V_AXIS - 1] > 1.5f)   ? 0.95f
                 : (m_ControlList[i].sens[CT_V_AXIS - 1] > 1.0f) ? 0.80f

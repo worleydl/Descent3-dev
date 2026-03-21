@@ -384,9 +384,15 @@ void joy_GetPos(tJoystick joy, tJoyPos *pos) {
     }
     if (mask & JOYFLAG_UVALID) {
       pos->u = SDL_GetJoystickAxis(stick, 4);
+#ifdef _UWP
+      pos->u = ((pos->u + 32768) / 65535.0f) * 32768.0f;
+#endif
     }
     if (mask & JOYFLAG_VVALID) {
       pos->v = SDL_GetJoystickAxis(stick, 5);
+#ifdef _UWP
+      pos->v = ((pos->v + 32768) / 65535.0f) * 32768.0f;
+#endif
     }
     for (i = 0; i < JOYPOV_NUM; ++i) {
       if (mask & (JOYFLAG_POVVALID << i)) {
