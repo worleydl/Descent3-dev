@@ -899,7 +899,11 @@ bool sdlgameController::enum_controllers() {
       joy_GetJoyInfo((tJoystick)dev, &jc);
 
       m_ControlList[num_devs].id = dev;
+#ifndef _UWP
       m_ControlList[num_devs].buttons = jc.num_btns;
+#else
+      m_ControlList[num_devs].buttons = jc.num_btns + 3; // + 3 for analog buttons and weird off by one
+#endif
       m_ControlList[num_devs].btnmask = 0;
       m_ControlList[num_devs].flags =
           ((jc.axes_mask & JOYFLAG_XVALID) ? CTF_X_AXIS : 0) | ((jc.axes_mask & JOYFLAG_YVALID) ? CTF_Y_AXIS : 0) |

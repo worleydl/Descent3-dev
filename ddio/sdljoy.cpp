@@ -142,6 +142,8 @@ bool sdlGamepadButtonFilter(const SDL_Event *event, const bool pressed) {
   if (event->gbutton.button == SDL_GAMEPAD_BUTTON_SOUTH) {
     vm_left_pressed = pressed;
     vm_left_handled = false;
+  } else if (event->gbutton.button == SDL_GAMEPAD_BUTTON_START) {
+    ddio_UpdateKeyState(KEY_ESC, pressed);
   }
 
   return false;
@@ -361,6 +363,7 @@ static inline uint32_t map_hat(Uint8 value) {
 void joy_GetPos(tJoystick joy, tJoyPos *pos) {
   SDL_Joystick *stick;
   int i;
+  int num_btns = Joysticks[joy].caps.num_btns;
 
   memset(pos, 0, (sizeof(*pos)));
 
@@ -399,11 +402,22 @@ void joy_GetPos(tJoystick joy, tJoyPos *pos) {
         pos->pov[i] = map_hat(SDL_GetJoystickHat(stick, i));
       }
     }
-    for (i = Joysticks[joy].caps.num_btns; i >= 0; --i) {
+    for (i = num_btns; i >= 0; --i) {
       if (SDL_GetJoystickButton(stick, i)) {
         pos->buttons |= (1 << i);
       }
     }
+
+#ifdef _UWP
+    // Analog trigger button support
+    if (pos->u > 3000) {
+        pos->buttons |= (1 << num_btns + 1);
+    }
+
+    if (pos->v > 3000) {
+        pos->buttons |= (1 << num_btns + 2);
+    }
+#endif
   }
 }
 
