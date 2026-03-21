@@ -444,11 +444,6 @@ int opengl_Setup(oeApplication *app, const int *width, const int *height) {
       return 0;
     }
 
-#ifdef _UWP
-    // mesa + libuwp bridge needs a size hint to resize the swapchain buffers
-    uwp_SetScreenSize(winw, winh);
-#endif
-
     bool grabMouse = FindArgChar("-nomousegrab", 'm') == 0;
     SDL_SetWindowRelativeMouseMode(GSDLWindow, grabMouse);
 
@@ -456,6 +451,11 @@ int opengl_Setup(oeApplication *app, const int *width, const int *height) {
   } else if (!Game_fullscreen) {
     SDL_SetWindowSize(GSDLWindow, winw, winh);
   }
+
+#ifdef _UWP
+  // mesa + libuwp bridge needs a size hint to resize the swapchain buffers
+  uwp_SetScreenSize(winw, winh);
+#endif
 
   if (!GSDLGLContext) {
     GSDLGLContext = SDL_GL_CreateContext(GSDLWindow);
