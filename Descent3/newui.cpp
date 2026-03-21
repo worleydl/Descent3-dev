@@ -315,6 +315,11 @@
 #include "dedicated_server.h"
 #include "pserror.h"
 
+#ifdef _UWP
+#include "SDL.h"
+extern SDL_Window *GSDLWindow;
+#endif
+
 #define MSGBOX_HEIGHT msgbox.H()
 #define BTN_WIDTH 96
 #define NEWUI_FRAMETIME (1.0f / 25.0f)
@@ -746,6 +751,11 @@ bool DoEditDialog(const char *title, char *buffer, int buflen, bool showcancel) 
   sheet->NewGroup(NULL, 0, 0);
   sheet->AddText(msgbuf);
 
+#ifdef _UWP
+  // todo: Need a shortcut to show kb if UI is active, or continuously call this inside DoUI
+  SDL_StartTextInput(GSDLWindow);
+#endif
+
   mbox.Open();
   res = mbox.DoUI();
   mbox.Close();
@@ -763,6 +773,10 @@ bool DoEditDialog(const char *title, char *buffer, int buflen, bool showcancel) 
 
   //	restore screen
   SetScreenMode(old_screen_mode);
+
+#ifdef _UWP
+  SDL_StopTextInput(GSDLWindow);
+#endif
 
   //	return correct value.
   return ((res != UID_CANCEL && res != NEWUIRES_FORCEQUIT) ? true : false);
