@@ -723,7 +723,8 @@ void opengl_Close(const bool just_resizing) {
 
   gRenderer.reset();
 
-  if (GSDLGLContext) {
+  // UWP: SDL3/Mesa having issues recreating context, we can just reuse it if resizing
+  if (GSDLGLContext && !just_resizing) {
     SDL_GL_MakeCurrent(nullptr, nullptr);
     SDL_GL_DestroyContext(GSDLGLContext);
     GSDLGLContext = nullptr;
