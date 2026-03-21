@@ -118,7 +118,9 @@ int mve_PlayMovie(const std::filesystem::path &pMovieName, oeApplication *pApp) 
 
     // check for bail
     int key = ddio_KeyInKey();
-    if (key == KEY_ESC) {
+    int vm_btn;
+    bool vm_state; 
+    if (key == KEY_ESC || ddio_VirtualMouseGetEvent(&vm_btn, &vm_state)) {
       aborted = true;
       break;
     }

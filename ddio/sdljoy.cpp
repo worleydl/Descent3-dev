@@ -121,13 +121,15 @@ bool ddio_VirtualMouseGetEvent(int *btn, bool *state) {
 }
 
 void ddio_VirtualMouseGetState(int* mx, int* my) {
-  // todo: maybe apply delta somewhere else
-  vm_x += vm_dx;
-  vm_y += vm_dy;
-
   // why are these values much higher than actual intended res?
   int left, top, right, bottom;
   ddio_MouseGetLimits(&left, &top, &right, &bottom, nullptr, nullptr);
+
+  // todo: maybe apply delta somewhere else
+  // todo: remove multipliers when high res mystery is solved
+  vm_x += vm_dx * ((float) right / 12800);
+  vm_y += vm_dy * ((float) bottom / 9600);
+
   vm_x = std::clamp(vm_x, 0, right);
   vm_y = std::clamp(vm_y, 0, bottom);
 

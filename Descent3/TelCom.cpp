@@ -2667,7 +2667,17 @@ void TelComHandleAllEvents(tTelComInfo *tcs) {
   if (Control_poll_flag) {
     buttons = Controller->get_mouse_raw_values(&x, &y);
   } else {
+#ifndef _UWP
     buttons = ddio_MouseGetState(&x, &y, NULL, NULL);
+#else
+    // todo: vm could use setter for state, telcom resets position to 0 which we don't do currently
+    // todo: vm get state needs btnmask return
+    ddio_VirtualMouseGetState(&x, &y);
+    int vm_btn;
+    bool vm_state;
+    ddio_VirtualMouseGetEvent(&vm_btn, &vm_state);
+    buttons = vm_state ? 1 : 0;
+#endif
   }
 
   Telcom_mouse_x = x;

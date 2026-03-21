@@ -532,7 +532,11 @@ void TCGoalsRenderCallback(void) {
 
   // Display tooltip box
   int mouse_x, mouse_y;
+#ifndef _UWP
   ddio_MouseGetState(&mouse_x, &mouse_y, NULL, NULL);
+#else
+  ddio_VirtualMouseGetState(&mouse_x, &mouse_y);
+#endif
   int index = FindHighlightedItem(mouse_x, mouse_y);
   char desc_buffer[1024], s_desc_buffer[1024], *ptr;
   ptr = desc_buffer;
