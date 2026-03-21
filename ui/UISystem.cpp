@@ -258,6 +258,12 @@ void ui_Close() {
   UI_app = NULL;
   UI_init = false;
 }
+
+#ifdef _UWP
+#define DDIO_MOUSEGETEVENT ddio_VirtualMouseGetEvent
+#else
+#define DDIO_MOUSEGETEVENT ddio_MouseGetEvent
+#endif
 //	retrieves input for user interface
 //		mouse
 //		keyboard
@@ -271,20 +277,16 @@ bool ui_MousePoll(bool buttons) {
 #ifndef _UWP
     //	get all input, mouse maintains persistent button info. key doesn't.
     btn_mask = ddio_MouseGetState(&mx, &my, NULL, NULL);
-    UI_input.last_mx = UI_input.mx;
-    UI_input.last_my = UI_input.my;
-    UI_input.mx = mx / kDefaultMouseScale;
-    UI_input.my = my / kDefaultMouseScale;
 #else
     ddio_VirtualMouseGetState(&mx, &my);
+#endif
     UI_input.last_mx = UI_input.mx;
     UI_input.last_my = UI_input.my;
     UI_input.mx = mx / kDefaultMouseScale;
     UI_input.my = my / kDefaultMouseScale;
-#endif
   } else if (UI_cursor_show) {
     // if bX_count is 0, then repeat processing can occur, otherwise only real mouse events are processed.
-    if (ddio_MouseGetEvent(&msebtn, &state)) {
+    if (DDIO_MOUSEGETEVENT(&msebtn, &state)) {
       // mprintf(2, "mouse #%d state %d at %04d %04d\n", msebtn, UI_input.b1_status, UI_input.mx, UI_input.my);
       if (msebtn == 0) {
         UI_input.b1_last_status = UI_input.b1_status;

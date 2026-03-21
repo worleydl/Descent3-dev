@@ -241,6 +241,7 @@ void ddio_InternalResetKey(uint8_t key);
 // ----------------------------------------------------------------------------
 //	Virtual Mouse Interface driven by gamepad inputs
 // ----------------------------------------------------------------------------
+bool ddio_VirtualMouseGetEvent(int *btn, bool *state);
 void ddio_VirtualMouseGetState(int *x, int *y);
 
 // ----------------------------------------------------------------------------

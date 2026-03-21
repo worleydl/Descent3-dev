@@ -92,6 +92,9 @@ static int vm_dy = 0;
 static int vm_x = 0;
 static int vm_y = 0;
 
+static bool vm_left_pressed = false;
+static bool vm_left_handled = true;
+
 static int joyGetNumDevs(void);
 
 //		closes connection with controller.
@@ -103,6 +106,19 @@ static bool joy_InitStick(tJoystick joy, char *server_adr);
 
 //	---------------------------------------------------------------------------
 //	global function impls
+
+
+bool ddio_VirtualMouseGetEvent(int *btn, bool *state) {
+  // Might build out more support eventually, for now I just want basic left click nav, vm_left_pressed is triggered by A press
+  if (!vm_left_handled) {
+    *btn = 0;
+    *state = vm_left_pressed;
+    vm_left_handled = true;
+    return true;
+  }
+
+  return false;
+}
 
 void ddio_VirtualMouseGetState(int* mx, int* my) {
   // todo: maybe apply delta somewhere else
@@ -117,6 +133,16 @@ void ddio_VirtualMouseGetState(int* mx, int* my) {
 
   *mx = vm_x;
   *my = vm_y;
+}
+
+
+bool sdlGamepadButtonFilter(const SDL_Event *event, const bool pressed) {
+  if (event->gbutton.button == SDL_GAMEPAD_BUTTON_SOUTH) {
+    vm_left_pressed = pressed;
+    vm_left_handled = false;
+  }
+
+  return false;
 }
 
 #define VIRTUAL_MOUSE_MAX_SPEED 250
