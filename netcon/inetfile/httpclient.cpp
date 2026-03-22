@@ -18,10 +18,19 @@
 
 #include "httpclient.h"
 
+#ifdef _UWP
+extern "C" __declspec(dllimport) void uwp_GetBundleFilePath(char *buf, const char* file);
+#endif
+
 namespace D3 {
 
 HttpClient::HttpClient(const std::string &URL) {
   m_client = std::make_unique<httplib::Client>(URL);
+#ifdef _UWP
+  char buf[256];
+  uwp_GetBundleFilePath(buf, "cacert.pem");
+  m_client->set_ca_cert_path(buf);
+#endif
   m_client->set_follow_location(true);  // Follow redirects
   m_client->set_connection_timeout(5, 0); // 5 sec timeout
 }

@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # todo: automatically apply based on msvc config if possible, libs work but DLL's have issues
 set (BUILD_CONFIG "RelWithDebInfo")
+#set (BUILD_CONFIG "Debug")
 
 # Define project
 project(descent3-uwp LANGUAGES CXX)
@@ -36,6 +37,7 @@ set(BinDeps
 	# todo: need a config that doesnt complain about missing files in other configs
 	${D3_DIR}/build/${BUILD_CONFIG}/Descent3.dll
 
+	cacert.pem
 	Package.appxmanifest
 )
 source_group("BinDeps" FILES ${BinDeps})

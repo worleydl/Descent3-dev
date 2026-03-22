@@ -24,6 +24,11 @@ target_link_libraries(Descent3_Online_TCP_IP PRIVATE
   $<$<PLATFORM_ID:Windows>:ws2_32>
   SDL3::SDL3
 )
+
+if (UWP_BUILD)
+  target_link_libraries(Descent3_Online_TCP_IP PRIVATE uwp::libuwp)
+endif()
+
 target_include_directories(Descent3_Online_TCP_IP PRIVATE ${SDL3_INCLUDE_DIRS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set_target_properties(Descent3_Online_TCP_IP PROPERTIES SUFFIX ".dylib")
