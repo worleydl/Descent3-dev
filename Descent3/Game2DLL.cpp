@@ -565,7 +565,10 @@ bool InitGameModule(const char *name, module *mod) {
   std::filesystem::path dll_name;
   std::filesystem::path tmp_dll_name;
   // Make the hog filename
-  lib_name = std::filesystem::path("netgames") / name;
+  std::string sname = name;
+  if (sname == "coop")
+    sname = "co-op";
+  lib_name = std::filesystem::path("netgames") / sname;
   lib_name.replace_extension(".d3m");
   // Make the dll filename
   dll_name = name;

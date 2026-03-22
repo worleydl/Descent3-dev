@@ -599,7 +599,12 @@ int msn_CheckGetMission(network_address *net_addr, char *filename) {
 #else
   // Don't download local missions
   std::filesystem::path pathname;
+#ifndef _UWP
   pathname = D3MissionsDir / filename;
+#else
+  const std::filesystem::path uwpMissionDir = "E:/descent3/missions";
+  pathname = uwpMissionDir / filename;
+#endif
   if (cfexist(filename) || cfexist(pathname)) {
     return 1;
   }
