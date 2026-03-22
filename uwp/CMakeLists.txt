@@ -37,6 +37,7 @@ set(BinDeps
 
 	# todo: need a config that doesnt complain about missing files in other configs
 	${D3_DIR}/build/${BUILD_CONFIG}/Descent3.dll
+	${D3_DIR}/build/${BUILD_CONFIG}/d3-win.hog
 
 	cacert.pem
 	Package.appxmanifest
