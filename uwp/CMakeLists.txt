@@ -9,8 +9,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # todo: automatically apply based on msvc config if possible, libs work but DLL's have issues
+set (BUILD_CONFIG "Release")
 #set (BUILD_CONFIG "RelWithDebInfo")
-set (BUILD_CONFIG "Debug")
+#set (BUILD_CONFIG "Debug")
 
 # Define project
 project(descent3-uwp LANGUAGES CXX)
